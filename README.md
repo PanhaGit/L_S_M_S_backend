@@ -10,6 +10,7 @@ Backend REST API for **Learning & Student Management System**, built with **Spri
 </p>
 
 ---
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 🚀 Features
 - Manage students, courses, and enrollments
