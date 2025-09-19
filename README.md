@@ -1,6 +1,6 @@
 # School Library Management System Backend
 
-Backend REST API for **Learning & Student Management System**, built with **Spring Boot** and **PostgreSQL**.
+Backend REST API for **School Library Management System** (L_S_M_S), handling students, courses, and enrollments.
 
 <p align="center">
   <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
@@ -8,7 +8,9 @@ Backend REST API for **Learning & Student Management System**, built with **Spri
   <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
   <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" />
 </p>
+<p align="center">
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+</p>
 
 ---
 
