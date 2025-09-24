@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: l_s_m_s_app
+    ports:
+      - "8181:8181"
+    depends_on:
+      - sqlserver
+    environment:
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_USER: ${MSSQL_USER}
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD}
+      MSSQL_PORT: ${MSSQL_PORT}
+    networks:
+      - l_s_m_s
+    volumes:
+      - app_logs:/log/logs
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: l_s_m_s_db
+    environment:
+      SA_PASSWORD: ${MSSQL_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "${MSSQL_PORT}:1433"
+    networks:
+      - l_s_m_s
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+volumes:
+  sqlserver_data:
+  app_logs:
+
+networks:
+  l_s_m_s:
