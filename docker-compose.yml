@@ -4,21 +4,24 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: l_s_m_s_app
     ports:
-      - "8181:8181"
+      - "8181:8080"
     depends_on:
       - sqlserver
     environment:
-      MSSQL_DB: ${MSSQL_DB}
-      MSSQL_USER: ${MSSQL_USER}
-      MSSQL_PASSWORD: ${MSSQL_PASSWORD}
-      MSSQL_PORT: ${MSSQL_PORT}
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:${MSSQL_PORT};databaseName=${MSSQL_DB}
+      SPRING_DATASOURCE_USERNAME: ${MSSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MSSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
     networks:
       - l_s_m_s
     volumes:
-      - app_logs:/log/logs
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ~/.m2:/root/.m2
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -36,7 +39,6 @@ services:
 
 volumes:
   sqlserver_data:
-  app_logs:
 
 networks:
   l_s_m_s:

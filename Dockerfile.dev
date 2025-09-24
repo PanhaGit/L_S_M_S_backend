@@ -1,0 +1,20 @@
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copy Maven wrapper and pom.xml first for caching
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Download dependencies offline
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Expose port
+EXPOSE 8080
+
+# Run Spring Boot in dev mode (hot reload)
+CMD ["./mvnw", "spring-boot:run"]
