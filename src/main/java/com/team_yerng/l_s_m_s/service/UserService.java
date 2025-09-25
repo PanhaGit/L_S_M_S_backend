@@ -40,13 +40,25 @@ public class UserService {
     }
 
     public UserDto updateUser(Long id, UserDto dto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        user.setFullName(dto.getFullName());
-        user.setEmail(dto.getEmail());
-        user.setRoleId(dto.getRoleId());
-        user.setStatus(dto.getStatus());
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        if (dto.getFullName() != null) {
+            user.setFullName(dto.getFullName());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getRoleId() != null) {
+            user.setRoleId(dto.getRoleId());
+        }
+        if (dto.getStatus() != null) {
+            user.setStatus(dto.getStatus());
+        }
+
         return UserMapper.toDto(userRepository.save(user));
     }
+
 
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
