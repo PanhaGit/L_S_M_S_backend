@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/PanhaGit/L_S_M_S_backend/blob/dev/src/main/resources/img/logo.png" alt="L_S_M_S Logo" width="200"/>
+</p>
+
 # School Library Management System Backend
 
 Backend REST API for **School Library Management System (L_S_M_S)**, handling students, courses, and enrollments.
