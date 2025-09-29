@@ -34,12 +34,10 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Allow authentication endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Require authentication for roles and users, though typically authorization (roles/permissions)
-                        // would be added here in a final application.
                         .requestMatchers("/api/roles/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/students/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
