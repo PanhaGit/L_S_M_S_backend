@@ -28,18 +28,25 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Removed JwtAuthenticationEntryPoint and JwtAccessDeniedHandler from method arguments
+        // and now use the class fields injected via the constructor to avoid potential circular dependency.
+
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Allow authentication endpoints
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Require authentication for roles and users, though typically authorization (roles/permissions)
+                        // would be added here in a final application.
                         .requestMatchers("/api/roles/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 401 handler
-                        .accessDeniedHandler(jwtAccessDeniedHandler) // 403 handler
+                        // Use the class fields for exception handlers
+                        .authenticationEntryPoint(this.jwtAuthenticationEntryPoint) // 401 handler
+                        .accessDeniedHandler(this.jwtAccessDeniedHandler) // 403 handler
                 );
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

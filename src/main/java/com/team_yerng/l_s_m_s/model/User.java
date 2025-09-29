@@ -30,7 +30,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Integer roleId; // 1=Admin, 2=User
+    private Integer roleId; // 1=Admin, 2=User (PRO TIP: Consider using an Enum for better type safety here!)
 
     @Column(nullable = false)
     private Boolean status = true;
