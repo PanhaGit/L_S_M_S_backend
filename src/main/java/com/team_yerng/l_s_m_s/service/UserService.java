@@ -22,9 +22,26 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Creates a new user. The UserDto must contain the plain text password,
+     * which is then securely encoded before saving.
+     * @param dto The UserDto containing user details, including the plain text password.
+     * @return The saved UserDto.
+     */
     public UserDto createUser(UserDto dto) {
         User user = UserMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode("123456"));
+
+        // CRITICAL FIX: Ensure password is provided in DTO and encode it securely.
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password is required to create a new user.");
+        }
+
+        // Encode the password before saving
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        // Ensure ID is null for a new entity creation
+        user.setId(null);
+
         return UserMapper.toDto(userRepository.save(user));
     }
 
@@ -54,6 +71,11 @@ public class UserService {
         }
         if (dto.getStatus() != null) {
             user.setStatus(dto.getStatus());
+        }
+
+        // Handle password update if a new password is provided
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
         return UserMapper.toDto(userRepository.save(user));
