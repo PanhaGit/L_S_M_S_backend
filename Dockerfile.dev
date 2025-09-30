@@ -11,6 +11,7 @@ COPY pom.xml .
 RUN ./mvnw dependency:go-offline -B
 
 # Copy source code
+
 COPY src ./src
 
 # Expose port

@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=l_s_m_s;encrypt=true;trustServerCertificate=true
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      format_sql: true
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: ${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.SQLServer2012Dialect}
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  accessExpirationMs: ${JWT_ACCESS_EXPIRATION_MS:900000}
+  refreshExpirationMs: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+server:
+  port: ${SERVER_PORT:8081}
