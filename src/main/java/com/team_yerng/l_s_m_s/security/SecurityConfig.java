@@ -2,6 +2,7 @@ package com.team_yerng.l_s_m_s.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +11,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class SecurityConfig {
+// ⬅️ Implement the WebMvcConfigurer interface for addCorsMappings
+public class SecurityConfig implements WebMvcConfigurer {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -29,11 +33,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Removed JwtAuthenticationEntryPoint and JwtAccessDeniedHandler from method arguments
-        // and now use the class fields injected via the constructor to avoid potential circular dependency.
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // ⬅️ FIX 1: Explicitly permit all OPTIONS requests for CORS preflights
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/roles/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
@@ -42,9 +47,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        // Use the class fields for exception handlers
-                        .authenticationEntryPoint(this.jwtAuthenticationEntryPoint) // 401 handler
-                        .accessDeniedHandler(this.jwtAccessDeniedHandler) // 403 handler
+                        .authenticationEntryPoint(this.jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(this.jwtAccessDeniedHandler)
                 );
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -61,5 +65,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

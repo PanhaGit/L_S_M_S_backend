@@ -1,6 +1,26 @@
-version: '3.9'
+version: '3.8'
 
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: l_s_m_s_db
+    environment:
+      SA_PASSWORD: "Nha@1234"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    networks:
+      - l_s_m_s
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Nha@1234 -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
   app:
     build:
       context: .
@@ -9,33 +29,22 @@ services:
     ports:
       - "8181:8080"
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:${MSSQL_PORT};databaseName=${MSSQL_DB}
-      SPRING_DATASOURCE_USERNAME: ${MSSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MSSQL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=l_s_m_s;encrypt=false;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: Nha@1234
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.SQLServerDialect
+      JWT_SECRET: d8a7b577b13701621ef638673f4e608cca3f175012734279f5c9be6d6d7bbdefdc9fbd2eff7fc490123456789abcdef
+      JWT_ACCESS_EXPIRATION_MS: 900000
     networks:
       - l_s_m_s
     volumes:
       - ./src:/app/src
       - ./pom.xml:/app/pom.xml
       - ~/.m2:/root/.m2
-
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: l_s_m_s_db
-    environment:
-      SA_PASSWORD: ${MSSQL_PASSWORD}
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
-    ports:
-      - "${MSSQL_PORT}:1433"
-    networks:
-      - l_s_m_s
-    volumes:
-      - sqlserver_data:/var/opt/mssql
 
 volumes:
   sqlserver_data:
