@@ -31,17 +31,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- FIX: Replaced spring-boot-starter-validation with the direct validator dependency
-             to avoid the persistent UnsatisfiedDependencyException conflict. -->
+        <!-- ✅ Use only Spring Boot-managed validation -->
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>8.0.1.Final</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
@@ -49,7 +48,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- SQL Server -->
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.7</version>
+        </dependency>
+
+        <!-- Optional: SQL Server (if needed) -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -64,7 +70,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- H2 (optional for testing) -->
+        <!-- H2 Database (optional for tests) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -79,11 +85,16 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- spring-dotenv -->
+        <!-- dotenv support -->
         <dependency>
             <groupId>me.paulschwarz</groupId>
             <artifactId>spring-dotenv</artifactId>
             <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
         </dependency>
 
         <!-- MapStruct -->
@@ -99,7 +110,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Spring Boot Test & Mockito -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -112,7 +123,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JWT Dependencies -->
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -131,7 +142,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Flyway Dependencies -->
+        <!-- Flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -140,15 +151,6 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-sqlserver</artifactId>
         </dependency>
-
-<!--        env fike-->
-        <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-
     </dependencies>
 
     <build>
@@ -176,7 +178,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Spring Boot Maven Plugin -->
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
