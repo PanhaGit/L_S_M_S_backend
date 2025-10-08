@@ -13,11 +13,14 @@ public class JwtUtils {
 
     private final SecretKey key;
     private final long accessExpirationMs;
+    private final long refreshExpirationMs;
 
     public JwtUtils(@Value("${jwt.secret}") String secret,
-                    @Value("${jwt.accessExpirationMs}") long accessExpirationMs) {
+                    @Value("${jwt.accessExpirationMs}") long accessExpirationMs,
+                    @Value("${jwt.refreshExpirationMs}") long refreshExpirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.accessExpirationMs = accessExpirationMs;
+        this.refreshExpirationMs = refreshExpirationMs;
     }
 
     // Generate access token
@@ -26,6 +29,16 @@ public class JwtUtils {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessExpirationMs))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    // Generate refresh token
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }

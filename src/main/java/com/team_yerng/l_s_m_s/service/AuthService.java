@@ -76,8 +76,9 @@ public class AuthService {
 
         // Generate tokens
         String accessToken = jwtUtils.generateAccessToken(user.getEmail());
-        String refreshToken = jwtUtils.generateAccessToken(user.getEmail()); // optional: use separate long-lived token
+        String refreshToken = jwtUtils.generateRefreshToken(user.getEmail());
 
+        // Save refresh token in DB
         PersonalAccessTokens pat = PersonalAccessTokens.builder()
                 .userId(user.getId())
                 .refreshToken(refreshToken)
@@ -95,8 +96,9 @@ public class AuthService {
         PersonalAccessTokens pat = tokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(InvalidRefreshTokenException::new);
 
-        if (pat.getExpiresAt().isBefore(LocalDateTime.now()))
+        if (pat.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new RefreshTokenExpiredException();
+        }
 
         User user = userRepository.findById(pat.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(pat.getUserId()));
