@@ -1,7 +1,7 @@
 package com.team_yerng.l_s_m_s.utils;
 
 import lombok.*;
-// Ensure you have all necessary imports
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,19 +13,36 @@ public class ApiResponse<T> {
     private int code;
     private String message;
     private T data;
+    private Pagination pagination;
 
-    // Standard Success (HTTP 200 OK)
-    public static <T> ApiResponse<T> success(T data) {
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Pagination {
+        private int page;
+        private int size;
+        private long totalElements;
+        private int totalPages;
+    }
+
+    // Standard Success
+    public static <T> ApiResponse<T> success(T data, Pagination pagination) {
         return ApiResponse.<T>builder()
                 .success(true)
                 .code(200)
                 .message("Success")
                 .data(data)
+                .pagination(pagination)
                 .build();
     }
 
-    // Standard Success (HTTP 201 OK)
-    public static <T> ApiResponse<T> created(T data,String message) {
+    public static <T> ApiResponse<T> success(T data) {
+        return success(data, null);
+    }
+
+    public static <T> ApiResponse<T> created(T data, String message) {
         return ApiResponse.<T>builder()
                 .success(true)
                 .code(201)
@@ -34,7 +51,6 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    // Standard Error Response
     public static <T> ApiResponse<T> error(int code, String message) {
         return ApiResponse.<T>builder()
                 .success(false)
